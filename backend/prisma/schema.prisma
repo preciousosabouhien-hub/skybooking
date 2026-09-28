@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum TripType {
+  ONE_WAY
+  ROUND_TRIP
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(USER)
+  bookings     Booking[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Airport {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  city      String
+  country   String
+  departures Flight[] @relation("DepartureAirport")
+  arrivals   Flight[] @relation("ArrivalAirport")
+}
+
+model Flight {
+  id             String   @id @default(cuid())
+  flightNumber   String   @unique
+  airline        String
+  departureTime  DateTime
+  arrivalTime    DateTime
+  durationMin    Int
+  economyPrice   Decimal  @db.Decimal(10, 2)
+  businessPrice  Decimal  @db.Decimal(10, 2)
+  totalSeats     Int      @default(180)
+  availableSeats Int      @default(180)
+  departureId    String
+  arrivalId      String
+  departure      Airport  @relation("DepartureAirport", fields: [departureId], references: [id])
+  arrival        Airport  @relation("ArrivalAirport", fields: [arrivalId], references: [id])
+  bookings       Booking[]
+  createdAt      DateTime @default(now())
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  reference      String        @unique
+  status         BookingStatus @default(CONFIRMED)
+  tripType       TripType
+  cabinClass     String
+  totalAmount    Decimal       @db.Decimal(10, 2)
+  passengerCount Int
+  seats          String[]
+  passengerData  Json
+  userId         String?
+  flightId       String
+  user           User?         @relation(fields: [userId], references: [id])
+  flight         Flight        @relation(fields: [flightId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
