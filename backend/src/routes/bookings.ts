@@ -89,7 +89,7 @@ router.get("/mine", requireAuth, async (req: AuthRequest, res) => {
 });
 
 router.post("/:id/cancel", requireAuth, async (req: AuthRequest, res) => {
-  const booking = await prisma.booking.findFirst({ where: { id: req.params.id, userId: req.user!.id } });
+  const booking = await prisma.booking.findFirst({ where: { id: String(req.params.id), userId: req.user!.id } });
   if (!booking) return res.status(404).json({ message: "Booking not found" });
   if (booking.status === "CANCELLED") return res.status(400).json({ message: "Booking already cancelled" });
   const updated = await prisma.$transaction(async tx => {
