@@ -54,7 +54,7 @@ function App(){
        const r=await fetch(`${API}/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:`${passenger.firstName} ${passenger.lastName}`.trim()||'Guest Traveler',email,password:'DemoPass123!'})});
        const d=await r.json(); if(!r.ok) throw new Error(d.message||'Please sign in or use a new email'); authToken=d.token; localStorage.setItem('skybook_token',authToken);setToken(authToken);
      }
-     const r=await fetch(`${API}/bookings`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${authToken}`},body:JSON.stringify({flightId:selected.id,tripType:trip==='Round trip'?'ROUND_TRIP':'ONE_WAY',cabinClass:'economy',seats:['12A'],passengerData:[passenger]})});
+          const r=await fetch(`${API}/bookings`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${authToken}`},body:JSON.stringify({flightId:selected.id,tripType:trip==='Round trip'?'ROUND_TRIP':'ONE_WAY',cabinClass:'economy',seats:['12A'],passengerData:[passenger]})});
      const d=await r.json(); if(!r.ok) throw new Error(d.message||'Booking failed');
      alert(`Booking confirmed! Reference: ${d.reference}`);setSelected(null);setBooking(false);search();
    }catch(e){setError(e instanceof Error?e.message:'Booking failed');}
