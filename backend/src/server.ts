@@ -8,13 +8,18 @@ import admin from "./routes/admin.js";
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
+const allowedOrigins = [
+  "https://skybooking-seven.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000"
+];
 
 app.use(cors({
   origin: (origin, callback) => {
-    const allowed = (process.env.CLIENT_URL || "http://localhost:5173").split(",").map(s => s.trim());
-    if (!origin || allowed.includes(origin)) callback(null, true);
-    else callback(new Error("CORS origin not allowed"));
-  }
+    if (!origin || allowedOrigin.includes(origin)) {callback(null, true);}
+    else {callback(new Error("Not allowed by CORS"));}
+  },
+  credentials:true
 }));
 app.use(express.json({ limit: "1mb" }));
 
